@@ -48,7 +48,7 @@ The Windows Direct Mode runner in genlayer-test 0.29.2 currently hits an upstrea
 https://github.com/cacx097/genlayer-policy-guard
 
 ## Deployment evidence
-CONTRACT_ADDRESS_TODO
+0x57AF337b9ac18a9dC6890D5B3898097298EC65e6
 
 ## Next milestones
 1. Multi-policy registry and per-policy history
@@ -56,3 +56,9 @@ CONTRACT_ADDRESS_TODO
 3. Source provenance and evidence snapshots
 4. Lightweight frontend/dashboard
 5. Webhook/API adapter for agent workflows
+
+## Hosted Studio runtime evidence
+- Contract address: 0x57AF337b9ac18a9dC6890D5B3898097298EC65e6
+- Deployment: Accepted
+- capture_baseline(): Accepted
+- get_baseline_profile(): Accepted with non-empty returned profile
