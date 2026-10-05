@@ -1,6 +1,6 @@
 # PolicyGuard — GenLayer Intelligent Contract
 
-Repository: https://github.com/cacx097/genlayer-intelligent-builder
+Repository: https://github.com/cacx097/genlayer-policy-guard
 
 PolicyGuard is a GenLayer-native semantic policy change oracle. It captures a validator-approved baseline for a public policy page and later asks GenLayer validators whether the live policy changed in a way that materially affects a user's rights, obligations, restrictions, eligibility, economic terms, deadlines, data use, enforcement consequences, or explicit exceptions.
 
@@ -66,6 +66,10 @@ Runtime checks:
 - contract deployment — accepted
 - `capture_baseline()` — accepted
 - `get_baseline_profile()` — accepted and returned a non-empty profile
+- `check_for_material_change()` — transaction accepted
+- `get_last_assessment()` — accepted and returned a non-empty assessment
+
+This confirms the deployed contract completed the full baseline → semantic change check → assessment retrieval flow in Hosted GenLayer Studio.
 
 The `genlayer-test 0.29.2` Direct Mode loader currently hits a Windows `WinError 32` while deleting a temporary stdin file that is still open. The Direct Mode tests remain in `tests/test_direct.py` and are skipped only on Windows so they can run on Linux/CI instead of masking the framework limitation.
 
