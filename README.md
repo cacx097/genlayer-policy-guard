@@ -57,7 +57,11 @@ Verified locally on Windows with Python 3.12:
 - GenLayer schema extraction — PASS
 - source/structure tests — 6 PASS
 
-Hosted GenLayer Studio runtime was also exercised with the Builder wallet:
+Hosted GenLayer Studio runtime was also exercised with the Builder wallet.
+
+Deployed contract address: `0x57AF337b9ac18a9dC6890D5B3898097298EC65e6`
+
+Runtime checks:
 
 - contract deployment — accepted
 - `capture_baseline()` — accepted
