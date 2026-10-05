@@ -41,6 +41,9 @@ Completed:
 - hosted GenLayer Studio deployment: accepted
 - capture_baseline(): accepted
 - get_baseline_profile(): accepted with non-empty output
+- check_for_material_change(): transaction accepted
+- get_last_assessment(): accepted with non-empty output
+- end-to-end baseline → change-check → assessment flow: verified in Hosted GenLayer Studio
 
 The Windows Direct Mode runner in genlayer-test 0.29.2 currently hits an upstream temporary-file WinError 32 before contract execution. Direct Mode tests are retained for Linux/CI and are skipped only on Windows.
 
@@ -62,3 +65,5 @@ https://github.com/cacx097/genlayer-policy-guard
 - Deployment: Accepted
 - capture_baseline(): Accepted
 - get_baseline_profile(): Accepted with non-empty returned profile
+- check_for_material_change(): Transaction Accepted
+- get_last_assessment(): Accepted with non-empty returned assessment
