@@ -1,0 +1,9 @@
+[project]
+name = "genlayer-policy-guard"
+version = "0.1.0"
+description = "GenLayer Intelligent Contract for semantic policy change detection"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
