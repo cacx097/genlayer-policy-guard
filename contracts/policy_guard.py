@@ -26,6 +26,9 @@ class PolicyGuard(gl.Contract):
 
     @gl.public.write
     def capture_baseline(self) -> typing.Any:
+        if self.baseline_ready:
+            raise gl.vm.UserError("baseline is immutable after initial capture")
+
         policy_name = self.policy_name
 
         def source_input() -> str:
