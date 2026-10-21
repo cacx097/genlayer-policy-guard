@@ -1,4 +1,4 @@
-# GenLayer Builder submission draft
+# GenLayer Builder — PolicyGuard resubmission evidence
 
 ## Category
 Intelligent Contracts
@@ -7,73 +7,36 @@ Intelligent Contracts
 PolicyGuard — Semantic Policy Change Oracle
 
 ## One-line description
-A GenLayer Intelligent Contract that distinguishes meaningful policy changes from harmless wording edits using validator-backed semantic consensus.
+A GenLayer Intelligent Contract that uses validator-backed semantic consensus to distinguish meaningful changes in public policies from harmless wording edits.
 
-## Problem
-Public rules change frequently, but a byte-level diff cannot tell whether an edit actually changes what a user may, must, or should do. A centralized LLM can make that judgment, but it introduces a single trusted decision-maker.
+## Reviewer request and fix
+The original `capture_baseline()` could be called repeatedly by any user, replacing the baseline and clearing the previous assessment. The revised source now checks `baseline_ready` at the start of the method and raises `baseline is immutable after initial capture` if the baseline already exists. This is a one-time initialization design: no public reset or replacement method was added. The change-detection method remains available.
 
-## Solution
-PolicyGuard records a validator-approved semantic baseline for a public policy URL, then later fetches the live policy and asks GenLayer validators whether the change is material.
-
-A material change is defined as a change to obligations, prohibitions, permissions, eligibility, fees or economic terms, deadlines, data use, enforcement consequences, or explicit exceptions.
+A focused local regression test verifies the initial capture, rejection of the second call, and preservation of both baseline and existing assessment.
 
 ## Why GenLayer
-PolicyGuard relies on capabilities that are central to GenLayer:
+PolicyGuard uses nondeterministic public web access, LLM semantic analysis, non-comparative baseline validation, and comparative validation for assessing subsequent policy changes. Fetched policy pages are treated as untrusted evidence.
 
-- web access from nondeterministic execution
-- LLM-based semantic judgment
-- non-comparative validation for baseline extraction
-- comparative validation for change detection
-- validator consensus instead of a centralized oracle
+## Public code and evidence
+Repository: https://github.com/cacx097/genlayer-policy-guard
 
-## Safety and robustness
-Fetched policy text is treated as untrusted evidence. The prompts explicitly instruct validators not to follow instructions embedded in the fetched content.
+Current (fixed) deployed contract: `0x83a171bDC6d39B5E3ad21D5D0a4d28A5EB3964e2`
 
-The constructor also rejects non-HTTPS sources. After a successful `capture_baseline()`, any subsequent capture call reverts with `baseline is immutable after initial capture` before web access or consensus. This prevents an arbitrary caller from overwriting the baseline or clearing a prior assessment.
+Current Studio Explorer evidence: https://explorer-studio.genlayer.com/address/0x83a171bDC6d39B5E3ad21D5D0a4d28A5EB3964e2
+
+Earlier (pre-fix) contract, retained for history only: `0x57AF337b9ac18a9dC6890D5B3898097298EC65e6`
 
 ## Verification
-Completed:
+- GenVM lint and contract validation — PASS
+- Local structure/regression tests — **7 PASS**, Windows Direct Mode **3 SKIP**
+- New Studio deployment with the revised code — SUCCESS
+- First `capture_baseline()` — SUCCESS
+- `get_baseline_profile()` — nonempty
+- `is_baseline_ready()` — `true`
+- `check_for_material_change()` — SUCCESS
+- `get_last_assessment()` — nonempty
+- Second `capture_baseline()` expected rejection — locally verified via focused test; no second intentionally failing Studio transaction was performed
+- Linux CI pass and independent live Explorer query — not claimed
 
-- genvm-lint: PASS
-- contract validation: PASS
-- schema extraction: PASS
-- source/structure tests: 7 PASS, including a regression test for the immutable baseline
-- hosted GenLayer Studio deployment: accepted
-- capture_baseline(): accepted
-- get_baseline_profile(): accepted with non-empty output
-- check_for_material_change(): transaction accepted
-- get_last_assessment(): accepted with non-empty output
-- end-to-end baseline → change-check → assessment flow: verified in Hosted GenLayer Studio
-
-The Windows Direct Mode runner in genlayer-test 0.29.2 currently hits an upstream temporary-file WinError 32 before contract execution. Direct Mode tests are retained for Linux/CI and are skipped only on Windows.
-
-## Public repository
-https://github.com/cacx097/genlayer-policy-guard
-
-## Deployment evidence
-0x57AF337b9ac18a9dC6890D5B3898097298EC65e6
-
-## Reviewer-requested correction (pending new deployment)
-
-Reviewer feedback: the original `capture_baseline()` was publicly callable more than once and could overwrite baseline data or clear the latest assessment. The revised contract rejects subsequent calls after successful initialization with `baseline is immutable after initial capture`. No public reset was added. A focused regression test confirms profile and assessment state are preserved.
-
-The old deployment address above documents the **initial v0 instance**, not the patched code. Submit an updated Explorer address only after new Studio deployment and successful verification. Amend the existing `Needs Action` entry; do not duplicate the contribution.
-
-## Next milestones
-1. Multi-policy registry and per-policy history
-2. Scheduled or event-triggered checks
-3. Source provenance and evidence snapshots
-4. Lightweight frontend/dashboard
-5. Webhook/API adapter for agent workflows
-
-## Hosted Studio runtime evidence
-- Contract address: 0x57AF337b9ac18a9dC6890D5B3898097298EC65e6
-- Deployment: Accepted
-- capture_baseline(): Accepted
-- get_baseline_profile(): Accepted with non-empty returned profile
-- check_for_material_change(): Transaction Accepted
-- get_last_assessment(): Accepted with non-empty returned assessment
-
-## Review requested: baseline immutability
-
-The reviewer requested an immutable baseline lifecycle. The revised `capture_baseline()` rejects a second invocation after successful initialization and preserves the baseline and existing assessment. The existing deployed contract address above is **pre-fix**. A new Hosted Studio deployment and corresponding updated Explorer evidence are required before resubmission. Do not describe the prior deployment as containing this fix.
+## Portal action
+Edit the existing PolicyGuard contribution marked **Needs Action** and replace the old Explorer evidence with the current contract URL. Update the reviewer response to explain the baseline immutability fix. **Do not create a new submission.** Portal resubmission remains a separate user action and has not been completed by this documentation update.
