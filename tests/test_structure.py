@@ -68,3 +68,58 @@ def test_material_change_categories_are_explicit():
         "enforcement consequences",
     ):
         assert term in src
+
+def test_baseline_cannot_be_overwritten_or_clear_assessment():
+    """Execute just the contract method with stubbed consensus, without network calls."""
+    import typing
+    from types import SimpleNamespace
+
+    import pytest
+
+    class UserError(Exception):
+        pass
+
+    class FakeConsensus:
+        calls = 0
+
+        def prompt_non_comparative(self, source_input, *, task, criteria):
+            self.calls += 1
+            return "validator-approved baseline"
+
+    consensus = FakeConsensus()
+    fake_gl = SimpleNamespace(
+        vm=SimpleNamespace(UserError=UserError),
+        eq_principle=consensus,
+    )
+    contract_class = next(
+        node for node in ast.parse(_source()).body
+        if isinstance(node, ast.ClassDef) and node.name == "PolicyGuard"
+    )
+    method = next(
+        node for node in contract_class.body
+        if isinstance(node, ast.FunctionDef) and node.name == "capture_baseline"
+    )
+    method.decorator_list = []
+    isolated = ast.fix_missing_locations(ast.Module(body=[method], type_ignores=[]))
+    namespace = {"gl": fake_gl, "typing": typing}
+    exec(compile(isolated, str(CONTRACT), "exec"), namespace)
+    capture = namespace["capture_baseline"]
+
+    instance = SimpleNamespace(
+        baseline_ready=False,
+        policy_name="Example",
+        baseline_profile="",
+        last_assessment="",
+    )
+    capture(instance)
+    assert instance.baseline_ready is True
+    assert instance.baseline_profile == "validator-approved baseline"
+    assert consensus.calls == 1
+
+    instance.last_assessment = "preserve existing change assessment"
+    with pytest.raises(UserError, match="baseline is immutable after initial capture"):
+        capture(instance)
+    assert instance.baseline_profile == "validator-approved baseline"
+    assert instance.last_assessment == "preserve existing change assessment"
+    assert consensus.calls == 1
+
