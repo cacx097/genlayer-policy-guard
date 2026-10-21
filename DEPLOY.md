@@ -1,39 +1,38 @@
-# Fast Hosted Studio Deployment
+# PolicyGuard — verified updated deployment
 
-Use the same wallet that already has the GenLayer Builder role.
+## Code and deployment
+Source: `contracts/policy_guard.py`
 
-## File
-C:\AI-Workspace\genlayer-policy-guard\contracts\policy_guard.py
+Fixed contract: `0x83a171bDC6d39B5E3ad21D5D0a4d28A5EB3964e2`
 
-## Constructor
-- policy_name: GitHub Acceptable Use Policies
-- source_url: https://docs.github.com/en/site-policy/acceptable-use-policies/github-acceptable-use-policies
+GenLayer Studio Explorer: https://explorer-studio.genlayer.com/address/0x83a171bDC6d39B5E3ad21D5D0a4d28A5EB3964e2
 
-## Minimal success path
-1. Import/upload policy_guard.py into https://studio.genlayer.com/
-2. Open the contract and click the run/deploy control.
-3. Enter the constructor values above.
-4. Deploy with the Builder wallet.
-5. After deployment, call capture_baseline().
-6. Call get_baseline_profile().
-7. Record the deployed contract address and successful transaction/execution evidence.
+Historical pre-fix contract: `0x57AF337b9ac18a9dC6890D5B3898097298EC65e6`
 
-## Reviewer-requested one-time baseline verification
+## Constructor used
+`policy_name`: `GitHub Acceptable Use Policies`
 
-For the corrected code at `contracts/policy_guard.py`, deploy a **new contract instance**. Do not assume the earlier Studio deployment includes this change.
+`source_url`: `https://docs.github.com/en/site-policy/acceptable-use-policies/github-acceptable-use-policies`
 
-1. Deploy with the same public policy name and HTTPS source URL, recording the **new** contract address.
-2. Call `capture_baseline()` once using Send Transaction and confirm `Result: SUCCESS`.
-3. Confirm `is_baseline_ready()` returns true and `get_baseline_profile()` returns non-empty text.
-4. Call `capture_baseline()` a **second time**, only if willing to perform an expected-to-fail Studio test transaction. It must revert with `baseline is immutable after initial capture`. Verify the existing baseline still reads unchanged.
-5. For a stronger preservation check, call `check_for_material_change()` and read `get_last_assessment()` before and after a repeat baseline attempt; the assessment should not be cleared.
-6. Use the new GenLayer Explorer contract URL and the updated matching repository when editing the existing Portal submission. Do not create a duplicate submission.
+The exact URL is required. One earlier deployment accidentally included a trailing ` 3.`, and `capture_baseline()` failed with `WEBPAGE_LOAD_FAILED` / 404. The corrected new instance succeeded.
 
-The repeated failed transaction in step 4 is a purposeful regression check, not required if Studio cost or signer friction makes it undesirable. Its cost should be reviewed before execution.
+## Completed Studio verification
+1. Updated contract deployed — SUCCESS.
+2. `capture_baseline()` — SUCCESS on first call.
+3. `get_baseline_profile()` — nonempty.
+4. `is_baseline_ready()` — `true`.
+5. `check_for_material_change()` — SUCCESS.
+6. `get_last_assessment()` — nonempty.
 
-## Pass condition
-- Deployment reaches successful execution.
-- capture_baseline() reaches successful execution.
-- get_baseline_profile() returns non-empty text.
+## Protection of stored state
+The revised method contains:
 
-Do not submit to Portal before these three conditions are verified.
+```python
+if self.baseline_ready:
+    raise gl.vm.UserError("baseline is immutable after initial capture")
+```
+
+A focused local test checks rejection of a second capture while preserving baseline and assessment. No second failed transaction was performed on the successful Studio deployment; do not claim otherwise. No further Studio transactions are needed for the ordinary Portal correction unless reviewers specifically demand additional on-chain proof.
+
+## Next step
+Update the existing Portal PolicyGuard **Needs Action** contribution (not a new slot), using the fixed contract's Explorer URL and this repository. Do not reference the old deployment as proof of the fix.
